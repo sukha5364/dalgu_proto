@@ -1,0 +1,33 @@
+name: dalgu_kakao_prototype
+description: "AI Agent 'Dalgu' KakaoTalk style prototype."
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.2.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # iOS 스타일 아이콘 사용을 위한 기본 패키지
+  cupertino_icons: ^1.0.8
+
+  # 앱의 상태(채팅 메시지, 로딩 상태 등) 관리를 위한 패키지
+  flutter_riverpod: ^2.5.1
+
+  # OpenAI API와 통신하기 위한 HTTP 패키지
+  http: ^1.2.1
+
+  # 메시지 시간 표시 등 날짜/시간 포맷팅을 위한 패키지
+  intl: ^0.19.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  flutter_lints: ^4.0.0
+
+flutter:
+  uses-material-design: true
