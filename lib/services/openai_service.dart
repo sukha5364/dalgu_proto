@@ -140,14 +140,4 @@ class OpenAIService {
             }
           ]
         };
-      } else {
-        return {
-          'error':
-              'Request failed: ${response.statusCode} ${response.reasonPhrase}'
-        };
-      }
-    } catch (e) {
-      return {'error': e.toString()};
-    }
-  }
-}
+
