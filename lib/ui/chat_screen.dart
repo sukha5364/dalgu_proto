@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:dalgu_kakao_prototype/controllers/chat_controller.dart';
-import 'package:dalgu_kakao_prototype/providers/providers.dart'; // 🚨 [수정] 이 부분을 수정했습니다.
+import 'package:dalgu_kakao_prototype/providers/providers.dart';
 import 'package:dalgu_kakao_prototype/ui/widgets/chat_input_field.dart';
 import 'package:dalgu_kakao_prototype/ui/widgets/message_bubble.dart';
 

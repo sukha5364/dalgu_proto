@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 
 class OpenAIService {
@@ -10,6 +11,8 @@ class OpenAIService {
   String get _apiKey {
     const key = String.fromEnvironment('OPENAI_API_KEY');
     if (key.isNotEmpty) return key;
+    final envKey = dotenv.env['OPENAI_API_KEY'];
+    if (envKey != null && envKey.isNotEmpty) return envKey;
     return Platform.environment['OPENAI_API_KEY'] ?? '';
   }
 
@@ -105,6 +108,10 @@ class OpenAIService {
       ],
     };
 
+    if (_apiKey.isEmpty) {
+      return {'error': 'Missing OPENAI_API_KEY'};
+    }
+
     try {
       final response = await http.post(uri,
           headers: {
@@ -140,4 +147,14 @@ class OpenAIService {
             }
           ]
         };
-
+      } else {
+        return {
+          'error':
+              'Request failed: ${response.statusCode} ${response.reasonPhrase}'
+        };
+      }
+    } catch (e) {
+      return {'error': e.toString()};
+    }
+  }
+}
