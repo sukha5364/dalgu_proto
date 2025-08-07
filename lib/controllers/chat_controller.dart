@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:dalgu_kakao_prototype/models/chat_message.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dalgu_kakao_prototype/providers/providers.dart'; // 🚨 [수정] 이 부분을 수정했습니다.
+import 'package:dalgu_kakao_prototype/providers/providers.dart';
 
 final chatControllerProvider = Provider((ref) => ChatController(ref: ref));
 

@@ -15,10 +15,10 @@ class OpenAIService {
 
   Future<Map<String, dynamic>> getChatCompletion(
       List<Map<String, dynamic>> history) async {
-    final uri = Uri.parse('https://api.openai.com/v1/chat/completions');
+    final uri = Uri.parse('https://api.openai.com/v1/responses');
     final body = {
-      'model': 'gpt-4o-mini',
-      'messages': history,
+      'model': 'o3',
+      'input': history,
       'temperature': 0.2,
       'tool_choice': 'auto',
       'tools': [
@@ -114,15 +114,30 @@ class OpenAIService {
           body: jsonEncode(body));
 
       if (response.statusCode == 200) {
-        return jsonDecode(response.body) as Map<String, dynamic>;
-      } else {
+        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+        final outputs = decoded['output'] as List<dynamic>?;
+        if (outputs == null || outputs.isEmpty) {
+          return {
+            'error': 'No output received from model',
+          };
+        }
+
+        final message = outputs.first as Map<String, dynamic>;
+        final contentParts = message['content'] as List<dynamic>? ?? [];
+        final content = contentParts
+            .where((p) => p['type'] == 'output_text')
+            .map<String>((p) => p['text'] as String)
+            .join('\n');
+
         return {
-          'error':
-              'Request failed: ${response.statusCode} ${response.reasonPhrase}'
+          'choices': [
+            {
+              'message': {
+                'role': message['role'] ?? 'assistant',
+                'content': content,
+                'tool_calls': message['tool_calls'],
+              }
+            }
+          ]
         };
-      }
-    } catch (e) {
-      return {'error': e.toString()};
-    }
-  }
-}
+
