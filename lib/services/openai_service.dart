@@ -18,11 +18,16 @@ class OpenAIService {
 
   Future<Map<String, dynamic>> getChatCompletion(
       List<Map<String, dynamic>> history) async {
-    final uri = Uri.parse('https://api.openai.com/v1/responses');
+    if (_apiKey.isEmpty) {
+      return {'error': 'Missing OPENAI_API_KEY'};
+    }
+
+    final uri = Uri.parse('https://api.openai.com/v1/chat/completions');
     final body = {
       'model': 'o3',
-      'input': history,
+      'messages': history,
       'temperature': 0.2,
+      'max_tokens': 500,
       'tool_choice': 'auto',
       'tools': [
         {
@@ -108,10 +113,6 @@ class OpenAIService {
       ],
     };
 
-    if (_apiKey.isEmpty) {
-      return {'error': 'Missing OPENAI_API_KEY'};
-    }
-
     try {
       final response = await http.post(uri,
           headers: {
@@ -121,32 +122,7 @@ class OpenAIService {
           body: jsonEncode(body));
 
       if (response.statusCode == 200) {
-        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
-        final outputs = decoded['output'] as List<dynamic>?;
-        if (outputs == null || outputs.isEmpty) {
-          return {
-            'error': 'No output received from model',
-          };
-        }
-
-        final message = outputs.first as Map<String, dynamic>;
-        final contentParts = message['content'] as List<dynamic>? ?? [];
-        final content = contentParts
-            .where((p) => p['type'] == 'output_text')
-            .map<String>((p) => p['text'] as String)
-            .join('\n');
-
-        return {
-          'choices': [
-            {
-              'message': {
-                'role': message['role'] ?? 'assistant',
-                'content': content,
-                'tool_calls': message['tool_calls'],
-              }
-            }
-          ]
-        };
+        return jsonDecode(response.body) as Map<String, dynamic>;
       } else {
         return {
           'error':
