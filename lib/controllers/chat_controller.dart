@@ -2,7 +2,7 @@
 import 'dart:convert';
 import 'package:dalgu_kakao_prototype/models/chat_message.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:dalgu_kakao_prototype/providers/providers.dart'; // 🚨 [수정] 이 부분을 수정했습니다.
+import 'package:dalgu_kakao_prototype/providers/providers.dart';
 
 final chatControllerProvider = Provider((ref) => ChatController(ref: ref));
 
@@ -10,21 +10,31 @@ class ChatController {
   final Ref _ref;
   ChatController({required Ref ref}) : _ref = ref;
 
+  static const _systemPrompt =
+      '당신은 달서구 주민의 공공서비스 이용을 돕는 비서 달구입니다. 제공된 함수만 사용하여 필요한 정보를 찾아주세요.';
+
   Future<void> sendMessage(String userInput) async {
     final chatNotifier = _ref.read(chatMessagesProvider.notifier);
     final isLoadingNotifier = _ref.read(isLoadingProvider.notifier);
 
+    final trimmed = userInput.trim();
+    if (trimmed.isEmpty) return;
+
     // 1. 사용자 메시지 UI에 추가 및 로딩 시작
     isLoadingNotifier.state = true;
-    chatNotifier.addMessage(ChatMessage(content: userInput, role: MessageRole.user, timestamp: DateTime.now()));
+    chatNotifier.addMessage(
+        ChatMessage(content: trimmed, role: MessageRole.user, timestamp: DateTime.now()));
 
     try {
       final openAIService = _ref.read(openAIServiceProvider);
       final localApiService = _ref.read(localApiServiceProvider);
 
-      List<Map<String, dynamic>> conversationHistory = _ref.read(chatMessagesProvider).map((msg) {
-        return {"role": msg.role.name, "content": msg.content};
-      }).toList();
+      List<Map<String, dynamic>> conversationHistory = [
+        {"role": "system", "content": _systemPrompt},
+        ..._ref.read(chatMessagesProvider).map((msg) {
+          return {"role": msg.role.name, "content": msg.content};
+        })
+      ];
 
       // 2. 1차 API 호출: 함수 사용 결정
       print("⏳ 1단계: GPT에게 어떤 API를 쓸지 물어보는 중...");
