@@ -17,8 +17,8 @@ class ChatInputField extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 12.0, vertical: 6.0),
+      color: Colors.transparent,
       child: SafeArea(
         child: Row(
           children: [
@@ -28,10 +28,12 @@ class ChatInputField extends StatelessWidget {
                 onSubmitted: (_) => _handleSend(),
                 decoration: InputDecoration(
                   hintText: '메시지를 입력하세요',
-                  fillColor: Colors.grey[100],
+                  fillColor: Colors.white,
                   filled: true,
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(20.0),
+                    borderRadius: BorderRadius.circular(24.0),
                     borderSide: BorderSide.none,
                   ),
                 ),
@@ -39,9 +41,13 @@ class ChatInputField extends StatelessWidget {
                 minLines: 1,
               ),
             ),
-            IconButton(
-              icon: const Icon(Icons.send),
-              onPressed: _handleSend,
+            const SizedBox(width: 8),
+            InkWell(
+              onTap: _handleSend,
+              child: const CircleAvatar(
+                backgroundColor: Color(0xFF007DBC),
+                child: Icon(Icons.send, color: Colors.white),
+              ),
             ),
           ],
         ),
